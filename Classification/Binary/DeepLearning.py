@@ -10,18 +10,28 @@ import tqdm
 from sklearn.metrics import roc_curve
 from sklearn.model_selection import StratifiedKFold, train_test_split
 from sklearn.preprocessing import LabelEncoder
+from pandas.api.types import is_numeric_dtype
+import sys
 
-# Read data
-data = pd.read_csv("sonar.csv", header=None)
-X = data.iloc[:, 0:60]
-y = data.iloc[:, 60]
 
-# Binary encoding of labels
-encoder = LabelEncoder()
-encoder.fit(y)
-y = encoder.transform(y)
+# load the dataset, split into input (X) and output (y) variables
+if (len(sys.argv)==1):
+    nameDataset= input ("Database name: ")
+else:
+    nameDataset = sys.argv[1]
 
-# Convert to 2D PyTorch tensors
+dataset = pd.read_csv('dataset/'+nameDataset, delimiter=',')
+cols = dataset.shape[1] - 1;
+print(dataset.shape)
+X = dataset.iloc[:,0:cols]
+y = dataset.iloc[:,cols]
+
+if (not is_numeric_dtype(y)):
+    print("Preprocessing data class");
+    encoder = LabelEncoder()
+    encoder.fit(y)
+    y = encoder.transform(y)
+
 X = torch.tensor(X.values, dtype=torch.float32)
 y = torch.tensor(y, dtype=torch.float32).reshape(-1, 1)
 
@@ -29,7 +39,7 @@ y = torch.tensor(y, dtype=torch.float32).reshape(-1, 1)
 class Wide(nn.Module):
     def __init__(self):
         super().__init__()
-        self.hidden = nn.Linear(60, 180)
+        self.hidden = nn.Linear(cols, 180)
         self.relu = nn.ReLU()
         self.output = nn.Linear(180, 1)
         self.sigmoid = nn.Sigmoid()
@@ -42,7 +52,7 @@ class Wide(nn.Module):
 class Deep(nn.Module):
     def __init__(self):
         super().__init__()
-        self.layer1 = nn.Linear(60, 60)
+        self.layer1 = nn.Linear(cols, 60)
         self.act1 = nn.ReLU()
         self.layer2 = nn.Linear(60, 60)
         self.act2 = nn.ReLU()
