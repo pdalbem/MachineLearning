@@ -1,5 +1,4 @@
 import copy
-
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
@@ -39,9 +38,9 @@ y = torch.tensor(y, dtype=torch.float32).reshape(-1, 1)
 class Wide(nn.Module):
     def __init__(self):
         super().__init__()
-        self.hidden = nn.Linear(cols, 180)
+        self.hidden = nn.Linear(cols, 50)
         self.relu = nn.ReLU()
-        self.output = nn.Linear(180, 1)
+        self.output = nn.Linear(50, 1)
         self.sigmoid = nn.Sigmoid()
 
     def forward(self, x):
@@ -52,13 +51,13 @@ class Wide(nn.Module):
 class Deep(nn.Module):
     def __init__(self):
         super().__init__()
-        self.layer1 = nn.Linear(cols, 60)
+        self.layer1 = nn.Linear(cols, 30)
         self.act1 = nn.ReLU()
-        self.layer2 = nn.Linear(60, 60)
+        self.layer2 = nn.Linear(30, 50)
         self.act2 = nn.ReLU()
-        self.layer3 = nn.Linear(60, 60)
+        self.layer3 = nn.Linear(50, 10)
         self.act3 = nn.ReLU()
-        self.output = nn.Linear(60, 1)
+        self.output = nn.Linear(10, 1)
         self.sigmoid = nn.Sigmoid()
 
     def forward(self, x):
